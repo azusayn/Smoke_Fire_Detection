@@ -72,7 +72,7 @@ class SmokeFileDetector():
                 else:
                   det = det.cpu().numpy()
                 
-                for *xyxy, conf, cls in det:
+                for *xyxy, conf, mycls in det:
                     x_min, y_min, x_max, y_max = xyxy
                     box_w = x_max - x_min
                     box_h = y_max - y_min
@@ -91,7 +91,8 @@ class SmokeFileDetector():
                             "width": float(width),
                             "height": float(height)
                         },
-                        "label": names[int(cls)],
+                        # TODO: this is not the standard api field.
+                        "label": names[int(mycls)],
                     })
 
             batch_results.append(results)
