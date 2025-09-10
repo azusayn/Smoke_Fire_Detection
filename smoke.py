@@ -1,6 +1,28 @@
 import argparse
+import sys
 
 from loguru import logger
+
+# Configure loguru for async logging
+logger.remove()  # Remove default handler
+logger.add(
+    "logs/smoke_detection_{time:YYYY-MM-DD}.log",
+    rotation="1 day",
+    retention="7 days",
+    compression="zip",
+    enqueue=True,  # Enable async logging
+    backtrace=True,
+    diagnose=True,
+    format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level} | {name}:{function}:{line} | {message}"
+)
+# Keep console output with proper colors
+logger.add(
+    sys.stderr,
+    colorize=True,
+    format="<green>{time:HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}:{function}:{line}</cyan> | {message}",
+    level="DEBUG",
+    enqueue=True
+)
 from models.experimental import *
 from utils.datasets import *
 from utils.general import *
