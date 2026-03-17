@@ -1,6 +1,7 @@
 import argparse
 import sys
 
+import torch
 from loguru import logger
 
 # Configure loguru for async logging
@@ -41,13 +42,10 @@ class SmokeFileDetector():
         parser.add_argument('--augment', action='store_true', help='augmented inference')
         self.opt, unknown = parser.parse_known_args()
 
-        # device = 'cpu' or '0' or '0,1,2,3'
-        # TODO: refactor with main.py
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-        # Initialize
-        self.half = self.device.type != 'cpu'  # half precision only supported on CUDA   
-        logger.info(f"device: {self.device.type}")
+        # Use CPU for this model (DirectML compatibility issue with YOLOv5 format)
+        self.device = torch.device('cpu')
+        self.half = False
+        logger.info(f"device: cpu (DirectML not supported for YOLOv5 format)")
         # Load models
         self.model = attempt_load(self.opt.weights, map_location=self.device)
         self.imgsz = check_img_size(self.opt.img_size, s=self.model.stride.max())
